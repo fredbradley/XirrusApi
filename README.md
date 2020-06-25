@@ -29,7 +29,7 @@ $default_options = [
 $api = new \FredBradley\XirrusApi\XirrusApi("https://xmsserver.tld:9443", "exampleusername", "examplepassword", $default_options);
 $api->request("GET", "stations.json"); // This will get you a php json object of your api result dataset
 ```
-Futher helper methods will be coded into this package in time.
+Further helper methods will be coded into this package in time.
 
 ## API Documentation
 Documentation can be found locally on your own XMS Hosted appliance, under "Settings -> XMS API -> API Documentation"
