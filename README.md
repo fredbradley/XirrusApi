@@ -21,6 +21,11 @@ composer require fredbradley/xirrusapi
 // Override default options
 $default_options = [
    'verify' => true, // set to false, if you are up against SSL verification issues 
+   /**
+    * Please note: Setting this to false is not recommended 
+    * and weakens the security of your system, but
+    * sometimes for testing purposes is nessecary
+    */
 ];
 $api = new \FredBradley\XirrusApi\XirrusApi("https://xmsserver.tld:9443", "exampleusername", "examplepassword", $default_options);
 $api->request("GET", "stations.json"); // This will get you a php json object of your api result dataset
