@@ -1,4 +1,6 @@
-preset: laravel
-
-disabled:
-  - single_class_element_per_statement
+php:
+    preset: psr12
+    tab-width: 4
+    use-tabs: false
+    finder:
+        name: "*.php"
