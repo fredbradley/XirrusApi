@@ -2,7 +2,7 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/fredbradley/xirrusapi.svg?style=flat-square)](https://packagist.org/packages/fredbradley/xirrusapi)
 [![Build Status](https://img.shields.io/travis/fredbradley/xirrusapi/master.svg?style=flat-square)](https://travis-ci.org/fredbradley/xirrusapi)
-![StyleCI Status](https://github.styleci.io/repos/7548986/shield)
+![StyleCI Status](https://github.styleci.io/repos/274672480/shield)
 [![Total Downloads](https://img.shields.io/packagist/dt/fredbradley/xirrusapi.svg?style=flat-square)](https://packagist.org/packages/fredbradley/xirrusapi)
 
 A PHP Wrapper for the [XMS](https://www.cambiumnetworks.com/products/software/xms-enterprise/) API from Xirrus / [Cambium Networks](https://www.cambiumnetworks.com/).   
