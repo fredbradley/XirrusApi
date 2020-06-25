@@ -5,7 +5,7 @@
 [![Quality Score](https://img.shields.io/scrutinizer/g/fredbradley/xirrusapi.svg?style=flat-square)](https://scrutinizer-ci.com/g/fredbradley/xirrusapi)
 [![Total Downloads](https://img.shields.io/packagist/dt/fredbradley/xirrusapi.svg?style=flat-square)](https://packagist.org/packages/fredbradley/xirrusapi)
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what PSRs you support to avoid any confusion with users and contributors.
+A PHP Wrapper for the [XMS](https://www.cambiumnetworks.com/products/software/xms-enterprise/) API from Xirrus / [Cambium Networks](https://www.cambiumnetworks.com/).   
 
 ## Installation
 
@@ -18,8 +18,17 @@ composer require fredbradley/xirrusapi
 ## Usage
 
 ``` php
-// Usage description here
+// Override default options
+$default_options = [
+   'verify' => true, // set to false, if you are up against SSL verification issues 
+];
+$api = new \FredBradley\XirrusApi\XirrusApi("https://xmsserver.tld:9443", "exampleusername", "examplepassword", $default_options);
+$api->request("GET", "stations.json"); // This will get you a php json object of your api result dataset
 ```
+Futher helper methods will be coded into this package in time.
+
+## API Documentation
+Documentation can be found locally on your own XMS Hosted appliance, under "Settings -> XMS API -> API Documentation"
 
 ### Testing
 
