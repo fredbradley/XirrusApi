@@ -2,6 +2,7 @@
 
 namespace FredBradley\XirrusApi;
 
+use FredBradley\XirrusApi\Traits\Search;
 use GuzzleHttp\Client;
 
 /**
@@ -10,6 +11,8 @@ use GuzzleHttp\Client;
  */
 class XirrusApi
 {
+    use Search;
+
     /**
      * @var string
      */
@@ -156,5 +159,16 @@ class XirrusApi
         ], $options));
 
         return $decode ? json_decode((string)$response->getBody(), true) : (string)$response->getBody();
+    }
+
+
+    /**
+     * @param array $pieces
+     * @return string
+     */
+    public function generateEndpoint(array $pieces): string
+    {
+        $str = implode("/", $pieces);
+        return str_replace("//", "/", $str);
     }
 }
