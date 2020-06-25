@@ -1,4 +1,4 @@
-# Very short description of the package
+# Xirrus / Cambium Networks XMS API for PHP
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/fredbradley/xirrusapi.svg?style=flat-square)](https://packagist.org/packages/fredbradley/xirrusapi)
 [![Build Status](https://img.shields.io/travis/fredbradley/xirrusapi/master.svg?style=flat-square)](https://travis-ci.org/fredbradley/xirrusapi)
