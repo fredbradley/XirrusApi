@@ -48,7 +48,8 @@ class XirrusApi
 
         $authToken = $this->getAuthBearerToken($client_id, $client_secret, $token_filename);
 
-        $this->client = new Client([
+        $this->client = new Client(
+            [
                 'verify' => $this->ssl_verify,
                 'base_uri' => $this->api_base_uri . $this->api_base_path,
                 'headers' => [
@@ -74,7 +75,6 @@ class XirrusApi
             $json->expires_at = false;
         }
         if ($this->tokenHasExpired($json)) {
-
             $client = new Client([
                 'verify' => $this->ssl_verify,
                 'base_uri' => $this->api_base_uri,
