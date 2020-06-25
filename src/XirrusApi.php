@@ -73,7 +73,7 @@ class XirrusApi
             $json = new \stdClass();
             $json->expires_at = false;
         }
-        if ($json->expires_at < time() || $json->expires_at === false) {
+        if ($this->tokenHasExpired($json)) {
 
             $client = new Client([
                 'verify' => $this->ssl_verify,
@@ -96,7 +96,7 @@ class XirrusApi
             $expires_at = $response->expires_in;
 
             $json = new \stdClass();
-            $json->expires_at = time() + ($expires_at * 60); // Now, plus  (seconds left on token * 60 to convert to milliseconds)
+            $json->expires_at = $this->generateExpiresAtTime($expires_at);
             $json->token = $token;
 
             $fp = fopen($token_filename, 'w');
@@ -105,6 +105,30 @@ class XirrusApi
         }
 
         return $json->token;
+    }
+
+    /**
+     * @param $json
+     * @return bool
+     */
+    private function tokenHasExpired($json): bool
+    {
+        if ($json->expires_at < time() || $json->expires_at === false) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Calculates the expires at time as a unix timestamp..
+     * Time now, plus (seconds left on token, times by 60 to get milliseconds)
+     *
+     * @param int $expires_at
+     * @return int
+     */
+    private function generateExpiresAtTime(int $expires_at): int
+    {
+        return time() + ($expires_at * 60);
     }
 
     /**
