@@ -41,7 +41,7 @@ class XirrusApi
      * @param string $client_secret
      * @param array $options
      */
-    public function __construct(string $base_uri, string $client_id, string $client_secret, array $options)
+    public function __construct(string $base_uri, string $client_id, string $client_secret, array $options=null)
     {
         $this->api_base_uri = $base_uri;
         $this->api_base_path = $options[ 'path' ] ?? '/api/v1/'; // Default to version 1
