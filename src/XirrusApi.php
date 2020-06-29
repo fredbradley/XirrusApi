@@ -33,7 +33,7 @@ class XirrusApi
     /**
      * Set a default name, and users can overwrite if they need to.
      */
-    public const TOKEN_FILENAME = "xirrus_token.json";
+    protected $token_filename = "xirrus_token.json";
 
     /**
      * XirrusApi constructor.
@@ -47,9 +47,9 @@ class XirrusApi
         $this->api_base_path = $options[ 'path' ] ?? '/api/v1/'; // Default to version 1
 
         $this->ssl_verify = $options[ 'verify' ] ?? true; // Default to true, but some users will need to overwrite this
-        $token_filename = $options[ 'token_filename' ] ?? self::TOKEN_FILENAME;
+        $this->token_filename = $options[ 'token_filename' ] ?? $this->token_filename;
 
-        $authToken = $this->getAuthBearerToken($client_id, $client_secret, $token_filename);
+        $authToken = $this->getAuthBearerToken($client_id, $client_secret);
 
         $this->client = new Client(
             [
@@ -66,48 +66,67 @@ class XirrusApi
     /**
      * @param string $client_id
      * @param string $client_secret
-     * @param string $token_filename
      * @return mixed
      */
-    private function getAuthBearerToken(string $client_id, string $client_secret, string $token_filename)
+    private function getRefreshedAuthToken(string $client_id, string $client_secret)
     {
-        if (file_exists($token_filename)) {
-            $json = json_decode(file_get_contents($token_filename));
+        $client = new Client([
+            'verify' => $this->ssl_verify,
+            'base_uri' => $this->api_base_uri,
+            'headers' => [
+                'Accept' => 'application/json',
+            ],
+        ]);
+
+        $request = $client->post('oauth/token', [
+            'form_params' => [
+                'client_id' => $client_id,
+                'client_secret' => $client_secret,
+                'grant_type' => 'client_credentials',
+            ],
+        ]);
+
+        return json_decode($request->getBody()->getContents());
+    }
+
+    /**
+     * @param string $client_id
+     * @param string $client_secret
+     * @return mixed
+     */
+    private function getAuthBearerToken(string $client_id, string $client_secret)
+    {
+        if (file_exists($this->token_filename)) {
+            $json = json_decode(file_get_contents($this->token_filename));
         } else {
             $json = new \stdClass();
             $json->expires_at = false;
         }
+
         if ($this->tokenHasExpired($json)) {
-            $client = new Client([
-                'verify' => $this->ssl_verify,
-                'base_uri' => $this->api_base_uri,
-                'headers' => [
-                    'Accept' => 'application/json',
-                ],
-            ]);
-
-            $request = $client->post('oauth/token', [
-                'form_params' => [
-                    'client_id' => $client_id,
-                    'client_secret' => $client_secret,
-                    'grant_type' => 'client_credentials',
-                ],
-            ]);
-
-            $response = json_decode($request->getBody()->getContents());
-            $token = $response->access_token;
-            $expires_at = $response->expires_in;
+            $freshResponse = $this->getRefreshedAuthToken($client_id, $client_secret);
+            $token = $freshResponse->access_token;
+            $expires_at = $freshResponse->expires_in;
 
             $json = new \stdClass();
             $json->expires_at = $this->generateExpiresAtTime($expires_at);
             $json->token = $token;
 
-            $fp = fopen($token_filename, 'w');
-            fwrite($fp, json_encode($json));
-            fclose($fp);
+            $this->saveTokenJsonFile(json_encode($json));
         }
 
         return $json->token;
+    }
+
+    /**
+     * @param string $json_string
+     * @return void
+     */
+    private function saveTokenJsonFile(string $json_string): void
+    {
+        $fp = fopen($this->token_filename, 'w');
+        fwrite($fp, $json_string);
+        fclose($fp);
     }
 
     /**
