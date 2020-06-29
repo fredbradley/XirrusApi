@@ -46,7 +46,7 @@ class XirrusApi
         $this->api_base_uri = $base_uri;
         $this->api_base_path = $options[ 'path' ] ?? '/api/v1/'; // Default to version 1
 
-        $this->ssl_verify = (bool)$options[ 'verify' ] ?? true; // Default to true, but some users will need to overwrite this
+        $this->ssl_verify = $options[ 'verify' ] ?? true; // Default to true, but some users will need to overwrite this
         $token_filename = $options[ 'token_filename' ] ?? self::TOKEN_FILENAME;
 
         $authToken = $this->getAuthBearerToken($client_id, $client_secret, $token_filename);
@@ -57,8 +57,8 @@ class XirrusApi
                 'base_uri' => $this->api_base_uri . $this->api_base_path,
                 'headers' => [
                     'Authorization' => 'Bearer ' . $authToken,
-                    'Accept' => 'application/json'
-                ]
+                    'Accept' => 'application/json',
+                ],
             ]
         );
     }
@@ -82,16 +82,16 @@ class XirrusApi
                 'verify' => $this->ssl_verify,
                 'base_uri' => $this->api_base_uri,
                 'headers' => [
-                    'Accept' => 'application/json'
-                ]
+                    'Accept' => 'application/json',
+                ],
             ]);
 
             $request = $client->post('oauth/token', [
                 'form_params' => [
                     'client_id' => $client_id,
                     'client_secret' => $client_secret,
-                    'grant_type' => 'client_credentials'
-                ]
+                    'grant_type' => 'client_credentials',
+                ],
             ]);
 
             $response = json_decode($request->getBody()->getContents());
@@ -111,14 +111,15 @@ class XirrusApi
     }
 
     /**
-     * @param $json
+     * @param object $json
      * @return bool
      */
-    private function tokenHasExpired($json): bool
+    private function tokenHasExpired(object $json): bool
     {
         if ($json->expires_at < time() || $json->expires_at === false) {
             return true;
         }
+
         return false;
     }
 
@@ -141,12 +142,12 @@ class XirrusApi
      * @param array $json
      * @param array $query
      * @param array $options
-     * @param boolean $decode JSON decode response body (defaults to true).
+     * @param bool $decode JSON decode response body (defaults to true).
      * @return mixed
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function request(
-        $method,
+        string $method,
         $uri = '',
         array $json = [],
         array $query = [],
@@ -155,7 +156,7 @@ class XirrusApi
     ) {
         $response = $this->client->request($method, $uri, array_merge([
             'json' => $json,
-            'query' => $query
+            'query' => $query,
         ], $options));
 
         return $decode ? json_decode((string)$response->getBody(), true) : (string)$response->getBody();
@@ -169,6 +170,7 @@ class XirrusApi
     public function generateEndpoint(array $pieces): string
     {
         $str = implode("/", $pieces);
+
         return str_replace("//", "/", $str);
     }
 }
