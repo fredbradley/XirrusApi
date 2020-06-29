@@ -1,8 +1,6 @@
 <?php
 
-
 namespace FredBradley\XirrusApi\Traits;
-
 
 /**
  * Trait Search
