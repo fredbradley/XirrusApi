@@ -5,6 +5,10 @@ namespace FredBradley\XirrusApi;
 
 use GuzzleHttp\Client;
 
+/**
+ * Trait XirrusAuth
+ * @package FredBradley\XirrusApi
+ */
 trait XirrusAuth
 {
     /**
