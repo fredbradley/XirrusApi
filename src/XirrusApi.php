@@ -11,7 +11,8 @@ use GuzzleHttp\Client;
  */
 class XirrusApi
 {
-    use XirrusAuth, Search;
+    use XirrusAuth;
+    use Search;
 
     /**
      * @var string
