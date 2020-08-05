@@ -2,7 +2,6 @@
 
 namespace FredBradley\XirrusApi;
 
-
 use GuzzleHttp\Client;
 
 /**
