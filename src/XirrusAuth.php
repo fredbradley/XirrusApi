@@ -86,11 +86,16 @@ trait XirrusAuth
      */
     private function tokenHasExpired(object $json): bool
     {
+        if (isset($json->expires_at) && is_int($json->expires_at) && $json->expires_at > time()) {
+            return false;
+        }
+        return true;
+        /*
         if ($json->expires_at < time() || $json->expires_at === false) {
             return true;
         }
 
-        return false;
+        return false;*/
     }
 
     /**
