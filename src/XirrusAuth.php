@@ -100,14 +100,14 @@ trait XirrusAuth
 
     /**
      * Calculates the expires at time as a unix timestamp..
-     * Time now, plus (seconds left on token, times by 60 to get milliseconds)
+     * Time now, plus seconds left on token
      *
      * @param int $expires_at
      *
-     * @return int
+     * @return int Unix Timestamp
      */
     private function generateExpiresAtTime(int $expires_at): int
     {
-        return time() + ($expires_at * 60);
+        return now()->addSeconds($expires_at)->format('U');
     }
 }
