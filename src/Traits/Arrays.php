@@ -19,5 +19,4 @@ trait Arrays
         $data = collect($result->hardware->components)->where("component", "=", "Access Point")->first();
         return $data->serialNumber;
     }
-
 }
