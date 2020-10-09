@@ -3,6 +3,7 @@
 namespace FredBradley\XirrusApi;
 
 use FredBradley\XirrusApi\Traits\Search;
+use FredBradley\XirrusApi\Traits\Arrays;
 use GuzzleHttp\Client;
 
 /**
@@ -13,6 +14,7 @@ class XirrusApi
 {
     use XirrusAuth;
     use Search;
+    use Arrays;
 
     /**
      * @var string
