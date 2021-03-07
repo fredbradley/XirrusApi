@@ -80,7 +80,7 @@ trait XirrusAuth
     }
 
     /**
-     * @param object $json
+     * @param \object $json
      *
      * @return bool
      */

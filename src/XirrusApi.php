@@ -36,7 +36,7 @@ class XirrusApi
     /**
      * Set a default name, and users can overwrite if they need to.
      */
-    protected $token_filename = "xirrus_token.json";
+    protected $token_filename = 'xirrus_token.json';
 
     /**
      * XirrusApi constructor.
@@ -59,8 +59,10 @@ class XirrusApi
     /**
      * @param string $client_id
      * @param string $client_secret
+     *
+     * @return void
      */
-    private function setupClient(string $client_id, string $client_secret)
+    private function setupClient(string $client_id, string $client_secret): void
     {
         $authToken = $this->getAuthBearerToken($client_id, $client_secret);
 
@@ -118,8 +120,8 @@ class XirrusApi
      */
     public function generateEndpoint(array $pieces): string
     {
-        $str = implode("/", $pieces);
+        $str = implode('/', $pieces);
 
-        return str_replace("//", "/", $str);
+        return str_replace('//', '/', $str);
     }
 }

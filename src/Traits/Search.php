@@ -17,6 +17,6 @@ trait Search
     {
         $uri = $this->generateEndpoint(['search.json', $search_type, $search_query]);
 
-        return $this->request("GET", $uri);
+        return $this->request('GET', $uri);
     }
 }
