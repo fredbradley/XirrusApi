@@ -115,7 +115,6 @@ class XirrusApi
         } catch (GuzzleException $exception) {
             throw new XirrusApiException($exception->getMessage(), $exception->getCode());
         }
-
     }
 
 
