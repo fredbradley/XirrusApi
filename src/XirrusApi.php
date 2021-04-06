@@ -5,6 +5,7 @@ namespace FredBradley\XirrusApi;
 use FredBradley\XirrusApi\Traits\Search;
 use FredBradley\XirrusApi\Traits\Arrays;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Class XirrusApi
@@ -101,15 +102,20 @@ class XirrusApi
         array $options = [],
         $closure = true
     ) {
-        $response = $this->client->request($method, $uri, array_merge([
-            'json' => $json,
-            'query' => $query,
-        ], $options));
+        try {
+            $response = $this->client->request($method, $uri, array_merge([
+                'json' => $json,
+                'query' => $query,
+            ], $options));
 
-        if (is_callable($closure)) {
-            return $closure(json_decode((string)$response->getBody()));
+            if (is_callable($closure)) {
+                return $closure(json_decode((string)$response->getBody()));
+            }
+            return $closure ? json_decode((string)$response->getBody()) : (string)$response->getBody();
+        } catch (GuzzleException $exception) {
+            throw new XirrusApiException($exception->getMessage(), $exception->getCode());
         }
-        return $closure ? json_decode((string)$response->getBody()) : (string)$response->getBody();
+
     }
 
 
