@@ -70,13 +70,15 @@ trait XirrusAuth
     /**
      * @param string $json_string
      *
-     * @return void
+     * @return int The number of bytes of token_filename
      */
-    private function saveTokenJsonFile(string $json_string): void
+    private function saveTokenJsonFile(string $json_string): int
     {
-        $fp = fopen($this->token_filename, 'w');
-        fwrite($fp, $json_string);
-        fclose($fp);
+        $put = file_put_contents($this->token_filename, $json_string);
+        if ($put===false) {
+            throw new \Exception("Could not put auth file");
+        }
+        return $put;
     }
 
     /**
