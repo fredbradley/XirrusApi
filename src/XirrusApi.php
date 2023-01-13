@@ -71,7 +71,7 @@ class XirrusApi
         $this->client = Http::acceptJson()
                             ->withoutVerifying()
                             ->withToken($authToken)
-                            ->baseUrl($this->api_base_uri.$this->api_base_path);
+                            ->baseUrl($this->api_base_uri . $this->api_base_path);
     }
 
     /**
