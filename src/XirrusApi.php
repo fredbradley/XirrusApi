@@ -6,6 +6,7 @@ use FredBradley\XirrusApi\Traits\Search;
 use FredBradley\XirrusApi\Traits\Arrays;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Http;
 
 /**
  * Class XirrusApi
@@ -30,7 +31,7 @@ class XirrusApi
      */
     protected $ssl_verify;
     /**
-     * @var Client
+     * @var \Illuminate\Http\Client\PendingRequest
      */
     protected $client;
 
@@ -42,9 +43,9 @@ class XirrusApi
     /**
      * XirrusApi constructor.
      *
-     * @param string $client_id
-     * @param string $client_secret
-     * @param array  $options
+     * @param  string  $client_id
+     * @param  string  $client_secret
+     * @param  array  $options
      */
     public function __construct(string $base_uri, string $client_id, string $client_secret, array $options = null)
     {
@@ -58,8 +59,8 @@ class XirrusApi
     }
 
     /**
-     * @param string $client_id
-     * @param string $client_secret
+     * @param  string  $client_id
+     * @param  string  $client_secret
      *
      * @return void
      */
@@ -67,32 +68,47 @@ class XirrusApi
     {
         $authToken = $this->getAuthBearerToken($client_id, $client_secret);
 
-        $this->client = new Client(
-            [
-                'verify' => $this->ssl_verify,
-                'base_uri' => $this->api_base_uri . $this->api_base_path,
-                'headers' => [
-                    'Authorization' => 'Bearer ' . $authToken,
-                    'Accept' => 'application/json',
-                ],
-            ]
-        );
+        $this->client = Http::acceptJson()
+                            ->withoutVerifying()
+                            ->withToken($authToken)
+                            ->baseUrl($this->api_base_uri.$this->api_base_path);
     }
 
+    /**
+     * @param  string  $uri
+     * @param  array  $query
+     * @param  \Closure|null  $closure
+     *
+     * @return array|mixed|object
+     * @throws \FredBradley\XirrusApi\XirrusApiException
+     */
+    public function get(string $uri, array $query = [], \Closure $closure = null)
+    {
+        try {
+            $response = $this->client->get($uri, $query)->object();
+            if (is_callable($closure)) {
+                return $closure($response);
+            }
+            return $response;
+        } catch (\Exception $exception) {
+            throw new XirrusApiException($exception->getMessage(), $exception->getCode());
+        }
+    }
 
     /**
      * Shorthand function to create requests with JSON body and query parameters.
      *
-     * @param        $method
-     * @param string $uri
-     * @param array  $json
-     * @param array  $query
-     * @param array  $options
-     * @param bool|\Closure   $closure JSON decode response body (defaults to true), or
+     * @param  string  $method
+     * @param  string  $uri
+     * @param  array  $json
+     * @param  array  $query
+     * @param  array  $options
+     * @param  bool|\Closure  $closure  JSON decode response body (defaults to true), or
      *                                 Or pass a Closure through to manipulate the output.
      *
      * @return mixed
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws \FredBradley\XirrusApi\XirrusApiException
+     * @deprecated Now encouraging people to use get method directly.
      */
     public function request(
         string $method,
@@ -103,23 +119,23 @@ class XirrusApi
         $closure = true
     ) {
         try {
-            $response = $this->client->request($method, $uri, array_merge([
+            $response = $this->client->$method($uri, array_merge([
                 'json' => $json,
                 'query' => $query,
-            ], $options));
+            ], $options))->throw()->object();
 
             if (is_callable($closure)) {
-                return $closure(json_decode((string)$response->getBody()));
+                return $closure($response);
             }
-            return $closure ? json_decode((string)$response->getBody()) : (string)$response->getBody();
-        } catch (GuzzleException $exception) {
+            return $response;
+        } catch (\Exception $exception) {
             throw new XirrusApiException($exception->getMessage(), $exception->getCode());
         }
     }
 
 
     /**
-     * @param array $pieces
+     * @param  array  $pieces
      *
      * @return string
      */
