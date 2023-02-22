@@ -89,14 +89,14 @@ class XirrusApi
             if (is_callable($closure)) {
                 return $closure($response);
             }
-            if (isset($response->error) && $response->error === 'invalid_token' && is_null(Cache::get(self::XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME))) {
-                Cache::put(self::XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME, 1, now()->addMinutes(5));
+            if (isset($response->error) && $response->error === 'invalid_token' && is_null(Cache::get(self::$token_refresh_count))) {
+                Cache::put(self::$token_refresh_count, 1, now()->addMinutes(5));
                 $this->removeTokenJsonFile();
                 return $this->get($uri, $query, $closure);
             }
 
-            if (Cache::get(self::XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME)) {
-                Cache::forget(self::XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME);
+            if (Cache::get(self::$token_refresh_count)) {
+                Cache::forget(self::$token_refresh_count);
             }
 
             return $response;

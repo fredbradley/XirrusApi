@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Http;
  */
 trait XirrusAuth
 {
-    public const XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME = 'xirrus_token_refresh_count';
+    public static $token_refresh_count = 'xirrus_token_refresh_count';
 
     /**
      * @param  string  $client_id
