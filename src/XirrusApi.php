@@ -119,10 +119,8 @@ class XirrusApi
         $closure = true
     ) {
         try {
-            $response = $this->client->$method($uri, array_merge([
-                'json' => $json,
-                'query' => $query,
-            ], $options))->throw()->object();
+            $options = array_merge($json, $query, $options);
+            $response = $this->client->$method($uri, $options)->throw()->object();
 
             if (is_callable($closure)) {
                 return $closure($response);
