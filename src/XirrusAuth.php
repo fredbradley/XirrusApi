@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Http;
  */
 trait XirrusAuth
 {
+    public const XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME = 'xirrus_token_refresh_count';
+
     /**
      * @param  string  $client_id
      * @param  string  $client_secret
@@ -28,6 +30,13 @@ trait XirrusAuth
                        'client_secret' => $client_secret,
                        'grant_type' => 'client_credentials',
                    ])->throw()->object();
+    }
+
+    private function removeTokenJsonFile(): void
+    {
+        if (file_exists($this->token_filename)) {
+            unlink($this->token_filename);
+        }
     }
 
     /**

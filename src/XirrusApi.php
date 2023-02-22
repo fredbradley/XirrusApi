@@ -4,8 +4,7 @@ namespace FredBradley\XirrusApi;
 
 use FredBradley\XirrusApi\Traits\Search;
 use FredBradley\XirrusApi\Traits\Arrays;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 /**
@@ -53,7 +52,7 @@ class XirrusApi
         $this->api_base_path = $options[ 'path' ] ?? '/api/v1/'; // Default to version 1
 
         $this->ssl_verify = $options[ 'verify' ] ?? true; // Default to true, but some users will need to overwrite this
-        $this->token_filename = $options[ 'token_filename' ] ?? $this->token_filename;
+        $this->token_filename = base_path($options[ 'token_filename' ] ?? $this->token_filename);
 
         $this->setupClient($client_id, $client_secret);
     }
@@ -63,6 +62,7 @@ class XirrusApi
      * @param  string  $client_secret
      *
      * @return void
+     * @throws \Illuminate\Http\Client\RequestException
      */
     private function setupClient(string $client_id, string $client_secret): void
     {
@@ -89,6 +89,16 @@ class XirrusApi
             if (is_callable($closure)) {
                 return $closure($response);
             }
+            if (isset($response->error) && $response->error === 'invalid_token' && is_null(Cache::get(self::XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME))) {
+                Cache::put(self::XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME, 1, now()->addMinutes(5));
+                $this->removeTokenJsonFile();
+                return $this->get($uri, $query, $closure);
+            }
+
+            if (Cache::get(self::XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME)) {
+                Cache::forget(self::XIRRUS_TOKEN_REFRESH_COUNT_CACHE_KEY_NAME);
+            }
+
             return $response;
         } catch (\Exception $exception) {
             throw new XirrusApiException($exception->getMessage(), $exception->getCode());
